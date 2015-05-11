@@ -151,7 +151,7 @@ The 'letter' must be an appercase and no space between row and col.
 For example: 'E2'
 <for 'EXIT' please insert 'Q'>", i_player.PlayerName));
 
-            do
+            do 
             {
                 if (!isFirstIteration)
                 {
@@ -159,7 +159,7 @@ For example: 'E2'
                 }
  
                 nextMoveAsString = Console.ReadLine();
-                if (nextMoveAsString == "Q")
+                if (nextMoveAsString == "Q") 
                 {
                     toPlay = false;
                     break;
