@@ -17,7 +17,7 @@ namespace B15_Ex02
         public int Size
         {
             get
-            {
+            { 
                 return m_Size;
             }
         }
