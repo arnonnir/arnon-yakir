@@ -9,6 +9,7 @@ namespace B15_Ex02
         private int m_NumOfCoins;
         private string m_PlayerName;
         private eSymbolOfPlayer m_Coin;
+        //   private List<Pair> m_listOfCoins;
 
         public int NumOfCoins
         {
@@ -30,29 +31,27 @@ namespace B15_Ex02
             }
         }
 
+        public eSymbolOfPlayer Coin
+        {
+            get
+            {
+                return m_Coin;
+            }
+        }
+        /* public List<Pair> listOfCoins
+         {
+             get
+             {
+                 return m_listOfCoins;
+             }
+         }*/
+
         public Player(eSymbolOfPlayer i_Coin, string i_Name)
         {
             m_PlayerName = i_Name;
             m_Coin = i_Coin;
             m_NumOfCoins = 2;
         }
-
-        /*
-        public List<userInterface.Pair> GetValidMoves(gameBoard i_Board, eSymbolOfPlayer i_Symbol)
-        {
-            List<KeyValuePair<int, int>> list = new List<KeyValuePair<int, int>>();
-            list.Add(new KeyValuePair<int, int>(1, 2));
-            return list;
-        }
-
-        public bool IsValidMoves(int i_Row, int i_Col, List<KeyValuePair<int, int>> i_ListOfValidMoves)
-        {
-            // Create the new cell
-            KeyValuePair<int, int> cell = new KeyValuePair<int, int>(i_Row, i_Col);
-
-            // Retrun true if new cell is member of the valid moves list
-            return i_ListOfValidMoves.Contains(cell);
-        }
-         */
     }
+
 }

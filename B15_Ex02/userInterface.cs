@@ -7,20 +7,6 @@ namespace B15_Ex02
 {
     class userInterface
     {
-        public struct Pair 
-        {
-            public int m_row;
-           // public int row { get; set; }
-            public int m_col;
-           // public int col { get; set; }
-
-            public Pair(int i_Row, int i_Col)
-            {
-                m_row = i_Row;
-                m_col = i_Col;
-            }
-        }
-
         public void run()
         {
             string firstPlayerName = getFirstPlayerName();
@@ -30,9 +16,70 @@ namespace B15_Ex02
 
             Screen.Clear();
             showBoard(engine.board);
-            Pair nextMove;
-            askForAMove(engine.player1, engine.board, out nextMove);
- 
+
+            Player playerTurn = engine.player1;
+            bool toPlay;
+            while (true)
+            {
+                bool hasValidMove = (playerTurn == engine.player1) ? engine.getPlayerTurn(ref playerTurn, engine.player2) 
+                                                                   : engine.getPlayerTurn(ref playerTurn, engine.player1); 
+                if (!hasValidMove)
+                {
+                    Console.WriteLine(string.Format(
+@"Congratulations {0} ! you are the winner !
+to play another game press '1'
+to exit press any other key", engine.winnerOfGame()));
+                    string newGame = Console.ReadLine();
+                    if (newGame == "1")
+                    {
+                        Screen.Clear();
+                        engine = new gameEngine(firstPlayerName, secondPlayerName, sizeOfBoard);
+                        showBoard(engine.board);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Thank you ! Hope to see you again :)");
+                        break;
+                    }
+                }
+                // There is a move that the player can do
+                else
+                {
+                    Pair nextMove;
+                    bool isFirstIteration = true;
+
+                    do
+                    {
+                        if (!isFirstIteration)
+                        {
+                            Screen.Clear();
+                            showBoard(engine.board);
+                            Console.WriteLine("it's not a valid move!");
+                        }
+
+                        toPlay = askForAMove(playerTurn, engine.board, out nextMove);
+                       // Console.WriteLine(toPlay);
+                       // Console.WriteLine(nextMove.toString());
+                        isFirstIteration = false;
+                    } while (toPlay && !engine.isValidMove(playerTurn, nextMove));
+                    
+                    // the player press 'Q' (quit the game)
+                    if (!toPlay)
+                    {
+                        Console.WriteLine(@"The Game is over, Hope to see you again :)");
+                        break;
+                    }
+                    else
+                    {
+                        engine.makeAMove(nextMove, playerTurn);
+                        Screen.Clear();
+                        showBoard(engine.board);
+                        playerTurn = (playerTurn == engine.player1) ? engine.player2 : engine.player1;
+                    }
+                }
+            }
+
+
         }
 
         string getFirstPlayerName()
@@ -51,7 +98,7 @@ Please enter your name: ");
             return firstPlayerName;
         }
 
-        string getSecondPlayerName(string i_firstPlayer) 
+        string getSecondPlayerName(string i_firstPlayer)
         {
             string secondPlayerName;
             int numOfPlayers = 0;
@@ -66,7 +113,7 @@ Please insert number of players:
 press '1' to play against the computer
 press '2' to play against another player
 Than, please press 'enter'", i_firstPlayer));
-            do 
+            do
             {
                 if (!firstRequestFromPlayer)
                 {
@@ -79,7 +126,7 @@ Please try again and press 'enter'");
                 // Get from the player how many players
                 isNumber = int.TryParse(Console.ReadLine(), out numOfPlayers);
                 firstRequestFromPlayer = false;
-            }while(!isNumber || (numOfPlayers != 1 && numOfPlayers != 2));
+            } while (!isNumber || (numOfPlayers != 1 && numOfPlayers != 2));
 
             // Check how many players the user decide 
             if (numOfPlayers == 2)
@@ -132,7 +179,7 @@ Please try again and press 'enter'");
         }
 
 
-        bool askForAMove(Player i_player, gameBoard i_board, out Pair i_nextMove) 
+        bool askForAMove(Player i_player, gameBoard i_board, out Pair i_nextMove)
         {
             string nextMoveAsString;
             //Pair nextMove;
@@ -151,15 +198,17 @@ The 'letter' must be an appercase and no space between row and col.
 For example: 'E2'
 <for 'EXIT' please insert 'Q'>", i_player.PlayerName));
 
-            do 
+            do
             {
                 if (!isFirstIteration)
                 {
+
+                    invalidLengthInput = false;
                     Console.WriteLine("Sorry but You inserted invalid input! please try again:");
                 }
- 
+
                 nextMoveAsString = Console.ReadLine();
-                if (nextMoveAsString == "Q") 
+                if (nextMoveAsString == "Q")
                 {
                     toPlay = false;
                     break;
@@ -169,7 +218,6 @@ For example: 'E2'
                     invalidLengthInput = true;
                     isFirstIteration = false;
                     continue;
-
                 }
                 col = nextMoveAsString[0];
                 rowIsInt = int.TryParse(nextMoveAsString[1].ToString(), out row);
@@ -177,36 +225,36 @@ For example: 'E2'
 
             } while (invalidLengthInput || !rowIsInt || col < 'A' || col > ('A' + i_board.Size - 1) || row < 1 || row > i_board.Size);
 
-                i_nextMove = new Pair(row - 1, col - 'A');   
+            i_nextMove = new Pair(row - 1, col - 'A');
             return toPlay;
         }
 
-        void showBoard(gameBoard i_board) 
+        void showBoard(gameBoard i_board)
         {
             StringBuilder finalBoard = new StringBuilder();
             StringBuilder borderOfRow = new StringBuilder();
             StringBuilder rowOfLetters = new StringBuilder();
 
             char letter = 'A';
-            rowOfLetters.Append("    ");
+            rowOfLetters.Append("    ");
             for (int i = 0; i < i_board.Size; i++)
             {
                 if (i == i_board.Size - 1)
                 {
-                    rowOfLetters.Append(string.Format("{0}  ", letter));
+                    rowOfLetters.Append(string.Format("{0}  ", letter));
                 }
                 else
                 {
-                    rowOfLetters.Append(string.Format("{0}   ", letter));
+                    rowOfLetters.Append(string.Format("{0}   ", letter));
                 }
                 letter++;
             }
 
             finalBoard.Append(rowOfLetters);
             finalBoard.Append(Environment.NewLine);
-            
+
             int numOfEquals = ((i_board.Size * 4) + 1);
-            borderOfRow.Append("  ");
+            borderOfRow.Append("  ");
             for (int i = 0; i < numOfEquals; i++)
             {
                 borderOfRow.Append('=');
@@ -231,7 +279,7 @@ For example: 'E2'
                     }
                     else if (i == locationOfCoin)
                     {
-                        
+
                         if (i_board[row, col] != 0)
                         {
                             rowWithBoardValues.Append(i_board[row, col]);
@@ -241,7 +289,7 @@ For example: 'E2'
                             rowWithBoardValues.Append(" ");
                         }
                         col++;
-                        locationOfCoin += 4;  
+                        locationOfCoin += 4;
                     }
                     else
                     {
@@ -257,4 +305,28 @@ For example: 'E2'
         }
     }
 }
+/*
+            
+            gameBoard b = new gameBoard(8);
+            int numOfEquals = (b.Size * 4) + 1;
+            string line = "".PadRight(numOfEquals, '=');
+            string str = "|".PadRight(4);
+            string[] arr = new string[b.Size + 1];
+            arr[b.Size] = "|";
+            string line2 = string.Join(str, arr);
 
+            string[] allLines = new string[(b.Size * 2) + 1];
+            for (int i = 0; i < allLines.Length; i++)
+            {
+                allLines[i] = (i % 2 == 0) ? line : line2;
+            }
+            string result = string.Join(Environment.NewLine, allLines);
+
+            Console.WriteLine(result);
+            Console.ReadLine();
+            
+
+        }
+    }
+}
+*/

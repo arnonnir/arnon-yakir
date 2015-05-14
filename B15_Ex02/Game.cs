@@ -10,9 +10,8 @@ namespace B15_Ex02
         {
             userInterface gameUi = new userInterface();
             gameUi.run();
-            
-            Console.ReadLine();
-            // check the repository 
+
+            Console.ReadLine();  
         }
     }
 }
